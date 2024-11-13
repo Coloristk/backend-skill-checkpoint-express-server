@@ -1,5 +1,6 @@
 import { Router } from "express";
 import connectionPool from "../utils/db.mjs";
+import questionValidate from "../middleware/questionValidation.mjs";
 
 const questionRouter = Router();
 
@@ -38,18 +39,12 @@ questionRouter.get("/:questionId", async (req, res) => {
   return res.status(200).json({ data: results.rows });
 });
 
-questionRouter.post("/", async (req, res) => {
+questionRouter.post("/", [questionValidate], async (req, res) => {
   const newQuestion = req.body;
-
-  if (!newQuestion.title || !newQuestion.category || !newQuestion.description) {
-    return res.status(400).json({
-      message: "Invalid request data.",
-    });
-  }
 
   try {
     await connectionPool.query(
-      `INSERT INTO questions (title, description, category,)
+      `INSERT INTO questions (title, description, category)
          values($1, $2, $3)`,
       [newQuestion.title, newQuestion.description, newQuestion.category]
     );
@@ -64,7 +59,7 @@ questionRouter.post("/", async (req, res) => {
   }
 });
 
-questionRouter.put("/:questionId", async (req, res) => {
+questionRouter.put("/:questionId", [questionValidate], async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   const updateQuestion = { ...req.body };
   try {
@@ -81,7 +76,7 @@ questionRouter.put("/:questionId", async (req, res) => {
     }
 
     await connectionPool.query(
-      `UPDATE questions SET title = $2, category = $3, description = $4
+      `UPDATE questions SET title = $2, description = $3, category = $4
         WHERE id = $1`,
       [
         questionIdFromClient,
@@ -95,7 +90,7 @@ questionRouter.put("/:questionId", async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: `Unable to fetch questions.`,
+      message: `Unable to update question.`,
     });
   }
 });
