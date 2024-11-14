@@ -95,4 +95,70 @@ answerRoute.delete("/:questionId/answers", async (req, res) => {
   }
 });
 
+answerRoute.post("/:questionId/vote", async (req, res) => {
+  const questionIdFromClient = req.params.questionId;
+  const { vote } = req.body;
+
+  try {
+    const questionCheck = await connectionPool.query(
+      `SELECT * FROM questions 
+            WHERE id = $1`,
+      [questionIdFromClient]
+    );
+
+    if (!questionCheck.rows[0]) {
+      return res.status(404).json({
+        message: "Question not found.",
+      });
+    }
+
+    await connectionPool.query(
+      `INSERT INTO question_votes (question_id, vote) 
+       VALUES ($1, $2)`,
+      [questionIdFromClient, vote]
+    );
+
+    return res.status(200).json({
+      message: "Vote on the question has been recorded successfully.",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Unable to vote question.${error.message}` });
+  }
+});
+
+answerRoute.post("/:answerId/vote", async (req, res) => {
+  const answerIdFromClient = req.params.answerId;
+  const { vote } = req.body;
+
+  try {
+    const answerCheck = await connectionPool.query(
+      `SELECT * FROM answers 
+            WHERE id = $1`,
+      [answerIdFromClient]
+    );
+
+    if (!answerCheck.rows[0]) {
+      return res.status(404).json({
+        message: "Answer not found.",
+      });
+    }
+
+    await connectionPool.query(
+      `INSERT INTO answer_votes (answer_id, vote) 
+      VALUES ($1, $2) `,
+      [answerIdFromClient, vote]
+    );
+
+    return res.status(200).json({
+      message: "Vote on the answer has been recorded successfully.",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Unable to vote answer.${error.message}` });
+  }
+});
+
 export default answerRoute;
