@@ -5,6 +5,23 @@ import validateVote from "../middleware/voteValidation.mjs";
 
 const answerRoute = Router();
 
+/**
+ * @swagger
+ * /questions/{questionId}/answers:
+ *   get:
+ *     summary: Get all answers for a specific question
+ *     parameters:
+ *       - in: path
+ *         name: questionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of answers for the question.
+ *       500:
+ *         description: Unable to fetch answers.
+ */
 answerRoute.get("/:questionId/answers", async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   let results = {};
@@ -24,6 +41,34 @@ answerRoute.get("/:questionId/answers", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /questions/{questionId}/answers:
+ *   post:
+ *     summary: Add an answer to a specific question
+ *     parameters:
+ *       - in: path
+ *         name: questionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Answer created successfully.
+ *       404:
+ *         description: Question not found.
+ *       500:
+ *         description: Unable to create answers.
+ */
 answerRoute.post("/:questionId/answers", [validateAnswer], async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   // ใส่ {} ไว้เพื่อดึงค่า content จากใน body ออกมาโดยตรงเลย
@@ -57,6 +102,25 @@ answerRoute.post("/:questionId/answers", [validateAnswer], async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /questions/{questionId}/answers:
+ *   delete:
+ *     summary: Delete all answers for a specific question
+ *     parameters:
+ *       - in: path
+ *         name: questionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: All answers for the question have been deleted successfully.
+ *       404:
+ *         description: Question not found.
+ *       500:
+ *         description: Unable to delete answers.
+ */
 answerRoute.delete("/:questionId/answers", async (req, res) => {
   const questionIdFromClient = req.params.questionId;
 
@@ -97,6 +161,34 @@ answerRoute.delete("/:questionId/answers", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /questions/{questionId}/vote:
+ *   post:
+ *     summary: Vote on a question
+ *     parameters:
+ *       - in: path
+ *         name: questionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               vote:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Vote on the question has been recorded successfully.
+ *       404:
+ *         description: Question not found.
+ *       500:
+ *         description: Unable to vote question.
+ */
 answerRoute.post("/:questionId/vote", [validateVote], async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   const { vote } = req.body;
@@ -130,6 +222,34 @@ answerRoute.post("/:questionId/vote", [validateVote], async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /answers/{answerId}/vote:
+ *   post:
+ *     summary: Vote on an answer
+ *     parameters:
+ *       - in: path
+ *         name: answerId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               vote:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Vote on the answer has been recorded successfully.
+ *       404:
+ *         description: Answer not found.
+ *       500:
+ *         description: Unable to vote answer.
+ */
 answerRoute.post("/:answerId/vote", [validateVote], async (req, res) => {
   const answerIdFromClient = req.params.answerId;
   const { vote } = req.body;

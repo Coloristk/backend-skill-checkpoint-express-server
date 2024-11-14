@@ -4,6 +4,17 @@ import questionValidate from "../middleware/questionValidation.mjs";
 
 const questionRoute = Router();
 
+/**
+ * @swagger
+ * /questions:
+ *   get:
+ *     summary: Get all questions
+ *     responses:
+ *       200:
+ *         description: A list of questions.
+ *       500:
+ *         description: Unable to fetch questions.
+ */
 questionRoute.get("/", async (req, res) => {
   let results = {};
   try {
@@ -16,6 +27,30 @@ questionRoute.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /questions/search:
+ *   get:
+ *     summary: Search questions by title or category
+ *     parameters:
+ *       - in: query
+ *         name: title
+ *         schema:
+ *           type: string
+ *         description: Title to search for
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Category to search for
+ *     responses:
+ *       200:
+ *         description: A list of questions matching the search criteria.
+ *       400:
+ *         description: Invalid search parameters.
+ *       500:
+ *         description: Unable to fetch a question.
+ */
 questionRoute.get("/search", async (req, res) => {
   const { title, category } = req.query;
 
@@ -44,6 +79,26 @@ questionRoute.get("/search", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /questions/{questionId}:
+ *   get:
+ *     summary: Get a specific question by ID
+ *     parameters:
+ *       - in: path
+ *         name: questionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the question to retrieve
+ *     responses:
+ *       200:
+ *         description: A question object.
+ *       404:
+ *         description: Question not found.
+ *       500:
+ *         description: Unable to fetch questions.
+ */
 questionRoute.get("/:questionId", async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   let results = {};
@@ -67,6 +122,30 @@ questionRoute.get("/:questionId", async (req, res) => {
   return res.status(200).json({ data: results.rows });
 });
 
+/**
+ * @swagger
+ * /questions:
+ *   post:
+ *     summary: Create a new question
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Question created successfully.
+ *       500:
+ *         description: Unable to create question.
+ */
 questionRoute.post("/", [questionValidate], async (req, res) => {
   const newQuestion = req.body;
 
@@ -87,6 +166,39 @@ questionRoute.post("/", [questionValidate], async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /questions/{questionId}:
+ *   put:
+ *     summary: Update a specific question
+ *     parameters:
+ *       - in: path
+ *         name: questionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the question to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Question updated successfully.
+ *       404:
+ *         description: Question not found.
+ *       500:
+ *         description: Unable to update question.
+ */
 questionRoute.put("/:questionId", [questionValidate], async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   const updateQuestion = { ...req.body };
@@ -123,6 +235,26 @@ questionRoute.put("/:questionId", [questionValidate], async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /questions/{questionId}:
+ *   delete:
+ *     summary: Delete a question
+ *     parameters:
+ *       - in: path
+ *         name: questionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the question to delete
+ *     responses:
+ *       200:
+ *         description: Question post has been deleted successfully.
+ *       404:
+ *         description: Question not found.
+ *       500:
+ *         description: Unable to delete question.
+ */
 questionRoute.delete("/:questionId", async (req, res) => {
   const questionIdFromClient = req.params.questionId;
 
