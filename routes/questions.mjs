@@ -16,6 +16,32 @@ questionRouter.get("/", async (req, res) => {
   }
 });
 
+questionRouter.get("/search", async (req, res) => {
+  const { title, category } = req.query;
+
+  if (!title && !category) {
+    return res.status(400).json({ message: "Invalid search parameters." });
+  }
+  try {
+    let query = "SELECT * FROM questions WHERE ";
+    const values = [];
+    if (title) {
+      query += "title LIKE $1 ";
+      values.push(`%${title}%`);
+    }
+    if (category) {
+      if (values.length > 0) query += "AND ";
+      query += "category LIKE $2 ";
+      values.push(`%${category}%`);
+    }
+
+    const results = await connectionPool.query(query, values);
+    return res.status(200).json({ data: results.rows });
+  } catch (error) {
+    return res.status(500).json({ message: `Unable to fetch a question` });
+  }
+});
+
 questionRouter.get("/:questionId", async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   let results = {};
