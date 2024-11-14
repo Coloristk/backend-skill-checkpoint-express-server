@@ -11,7 +11,7 @@ questionRoute.get("/", async (req, res) => {
     return res.status(200).json(results.rows);
   } catch (error) {
     return res.status(500).json({
-      message: `Unable to fetch questions.`,
+      message: `Unable to fetch questions.${error.message}`,
     });
   }
 });
@@ -38,7 +38,9 @@ questionRoute.get("/search", async (req, res) => {
     const results = await connectionPool.query(query, values);
     return res.status(200).json({ data: results.rows });
   } catch (error) {
-    return res.status(500).json({ message: `Unable to fetch a question` });
+    return res
+      .status(500)
+      .json({ message: `Unable to fetch a question.${error.message}` });
   }
 });
 
@@ -54,7 +56,7 @@ questionRoute.get("/:questionId", async (req, res) => {
     );
   } catch (error) {
     return res.status(500).json({
-      message: `Unable to fetch questions.`,
+      message: `Unable to fetch questions.${error.message}`,
     });
   }
   if (!results.rows[0]) {
@@ -80,7 +82,7 @@ questionRoute.post("/", [questionValidate], async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: `Unable to create question.`,
+      message: `Unable to create question.${error.message}`,
     });
   }
 });
@@ -116,7 +118,7 @@ questionRoute.put("/:questionId", [questionValidate], async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: `Unable to update question.`,
+      message: `Unable to update question.${error.message}`,
     });
   }
 });
@@ -146,7 +148,7 @@ questionRoute.delete("/:questionId", async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: `Unable to delete question.`,
+      message: `Unable to delete question.${error.message}`,
     });
   }
 });
