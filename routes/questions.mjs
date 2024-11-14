@@ -2,9 +2,9 @@ import { Router } from "express";
 import connectionPool from "../utils/db.mjs";
 import questionValidate from "../middleware/questionValidation.mjs";
 
-const questionRouter = Router();
+const questionRoute = Router();
 
-questionRouter.get("/", async (req, res) => {
+questionRoute.get("/", async (req, res) => {
   let results = {};
   try {
     results = await connectionPool.query(`SELECT * FROM questions`);
@@ -16,7 +16,7 @@ questionRouter.get("/", async (req, res) => {
   }
 });
 
-questionRouter.get("/search", async (req, res) => {
+questionRoute.get("/search", async (req, res) => {
   const { title, category } = req.query;
 
   if (!title && !category) {
@@ -42,7 +42,7 @@ questionRouter.get("/search", async (req, res) => {
   }
 });
 
-questionRouter.get("/:questionId", async (req, res) => {
+questionRoute.get("/:questionId", async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   let results = {};
   try {
@@ -65,7 +65,7 @@ questionRouter.get("/:questionId", async (req, res) => {
   return res.status(200).json({ data: results.rows });
 });
 
-questionRouter.post("/", [questionValidate], async (req, res) => {
+questionRoute.post("/", [questionValidate], async (req, res) => {
   const newQuestion = req.body;
 
   try {
@@ -85,7 +85,7 @@ questionRouter.post("/", [questionValidate], async (req, res) => {
   }
 });
 
-questionRouter.put("/:questionId", [questionValidate], async (req, res) => {
+questionRoute.put("/:questionId", [questionValidate], async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   const updateQuestion = { ...req.body };
   try {
@@ -121,7 +121,7 @@ questionRouter.put("/:questionId", [questionValidate], async (req, res) => {
   }
 });
 
-questionRouter.delete("/:questionId", async (req, res) => {
+questionRoute.delete("/:questionId", async (req, res) => {
   const questionIdFromClient = req.params.questionId;
 
   try {
@@ -151,4 +151,4 @@ questionRouter.delete("/:questionId", async (req, res) => {
   }
 });
 
-export default questionRouter;
+export default questionRoute;

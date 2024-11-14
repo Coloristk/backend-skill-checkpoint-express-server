@@ -1,11 +1,13 @@
 import express from "express";
-import questionRouter from "./routes/questions.mjs";
+import questionRoute from "./routes/questions.mjs";
+import answerRoute from "./routes/answers.mjs";
 
 const app = express();
 const port = process.env.PORT || 4001;
 
 app.use(express.json());
-app.use("/questions", questionRouter);
+app.use("/questions", questionRoute);
+app.use("/questions", answerRoute);
 
 app.listen(port, () => {
   console.log(`Server is running at ${port}`);
