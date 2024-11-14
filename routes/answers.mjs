@@ -1,5 +1,7 @@
 import { Router } from "express";
 import connectionPool from "../utils/db.mjs";
+import validateAnswer from "../middleware/answerValidation.mjs";
+import validateVote from "../middleware/voteValidation.mjs";
 
 const answerRoute = Router();
 
@@ -22,7 +24,7 @@ answerRoute.get("/:questionId/answers", async (req, res) => {
   }
 });
 
-answerRoute.post("/:questionId/answers", async (req, res) => {
+answerRoute.post("/:questionId/answers", [validateAnswer], async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   // ใส่ {} ไว้เพื่อดึงค่า content จากใน body ออกมาโดยตรงเลย
   const { content } = req.body;
@@ -95,7 +97,7 @@ answerRoute.delete("/:questionId/answers", async (req, res) => {
   }
 });
 
-answerRoute.post("/:questionId/vote", async (req, res) => {
+answerRoute.post("/:questionId/vote", [validateVote], async (req, res) => {
   const questionIdFromClient = req.params.questionId;
   const { vote } = req.body;
 
@@ -128,7 +130,7 @@ answerRoute.post("/:questionId/vote", async (req, res) => {
   }
 });
 
-answerRoute.post("/:answerId/vote", async (req, res) => {
+answerRoute.post("/:answerId/vote", [validateVote], async (req, res) => {
   const answerIdFromClient = req.params.answerId;
   const { vote } = req.body;
 
